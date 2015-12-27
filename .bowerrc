@@ -1,4 +1,9 @@
 {
   "directory": "libs",
-  "color": true
+  "color": true,
+  "ignoredDependencies": [
+    "bootstrap",
+    "fontawesome",
+    "jquery"
+  ]
 }
