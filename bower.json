@@ -1,5 +1,5 @@
 {
-  "name": "editorHTML",
+  "name": "HTML Editor",
   "id": "editorHTML",
   "description": "A TagSpaces extension allowing editing of HTML documents.",
   "type": "editor",
