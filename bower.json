@@ -17,7 +17,7 @@
     "html",
     "htm"
   ],
-  "license": "",
+  "license": "MIT",
   "main": [
     "extension.js"
   ],
