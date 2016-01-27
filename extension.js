@@ -1,23 +1,15 @@
-/* Copyright (c) 2013 The Tagspaces Authors. All rights reserved.
- * Use of this source code is governed by a AGPL3 license that
- * can be found in the LICENSE file. */
+/* Copyright (c) 2013-2016 The TagSpaces Authors.
+ * Use of this source code is governed by the MIT license which can be found in the LICENSE.txt file. */
 
 define(function(require, exports, module) {
   "use strict";
 
   console.log("Loading editorHTML");
 
-  var extensionTitle = "HTML Editor";
   var extensionID = "editorHTML"; // ID should be equal to the directory name where the ext. is located
-  var extensionType = "editor";
-  var extensionIcon = "icon-list";
-  var extensionVersion = "1.0";
-  var extensionManifestVersion = 1;
-  var extensionLicense = "AGPL";
   var extensionSupportedFileTypes = ["html", "htm"];
 
   var TSCORE = require("tscore");
-  //var TSPOSTIO = require("tspostioapi");
   var extensionsPath = TSCORE.Config.getExtensionPath();
 
   var extensionDirectory = extensionsPath + "/" + extensionID;
@@ -28,7 +20,7 @@ define(function(require, exports, module) {
     currentFilePath,
     $containerElement;
 
-  exports.init = function(filePath, containerElementID) {
+  function init(filePath, containerElementID) {
     console.log("Initalization HTML Editor...");
 
     fileDirectory = TSCORE.TagUtils.extractContainingDirectoryPath(filePath);
@@ -70,16 +62,17 @@ define(function(require, exports, module) {
     //}
   };
 
-  exports.setFileType = function(fileType) {
+  function setFileType(fileType) {
+
     console.log("setFileType not supported on this extension");
   };
 
-  exports.viewerMode = function(isViewerMode) {
+  function viewerMode(isViewerMode) {
     // set readonly
     console.log("viewerMode not supported on this extension");
   };
 
-  exports.setContent = function(content) {
+  function setContent(content) {
     currentContent = content;
 
     var bodyRegex = /\<body[^>]*\>([^]*)\<\/body/m; // jshint ignore:line
@@ -134,7 +127,7 @@ define(function(require, exports, module) {
 
   window.setTimeout(checkContentChanged, 1000);
 
-  exports.getContent = function() {
+  function getContent() {
     var content = $("#iframeViewer").contents().find(".note-editable").html();
 
     // removing all scripts from the document
@@ -168,14 +161,10 @@ define(function(require, exports, module) {
     return htmlContent;
   };
 
-  // Extension Vars
-  exports.Title = extensionTitle;
-  exports.ID = extensionID;
-  exports.Type = extensionType;
-  exports.Icon = extensionIcon;
-  exports.Version = extensionVersion;
-  exports.ManifestVersion = extensionManifestVersion;
-  exports.License = extensionLicense;
-  exports.SupportedFileTypes = extensionSupportedFileTypes;
+  exports.init = init;
+  exports.getContent = getContent;
+  exports.setContent = setContent;
+  exports.viewerMode = viewerMode;
+  exports.setFileType = setFileType;
 
 });
