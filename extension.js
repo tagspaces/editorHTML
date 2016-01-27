@@ -4,21 +4,21 @@
 define(function(require, exports, module) {
   "use strict";
 
-  console.log("Loading editorHTML");
-
   var extensionID = "editorHTML"; // ID should be equal to the directory name where the ext. is located
   var extensionSupportedFileTypes = ["html", "htm"];
 
+  console.log("Loading " + extensionID);
+
   var TSCORE = require("tscore");
   var extensionsPath = TSCORE.Config.getExtensionPath();
-
   var extensionDirectory = extensionsPath + "/" + extensionID;
-
   var fileDirectory;
-
   var currentContent,
     currentFilePath,
     $containerElement;
+  var contentVersion = 0;
+
+  window.setTimeout(checkContentChanged, 1000);
 
   function init(filePath, containerElementID) {
     console.log("Initalization HTML Editor...");
@@ -60,17 +60,17 @@ define(function(require, exports, module) {
     //} else {
     //  window.addEventListener('message', function(e) {alert(e.origin);alert(e.data);}, false);
     //}
-  };
+  }
 
   function setFileType(fileType) {
 
     console.log("setFileType not supported on this extension");
-  };
+  }
 
   function viewerMode(isViewerMode) {
     // set readonly
     console.log("viewerMode not supported on this extension");
-  };
+  }
 
   function setContent(content) {
     currentContent = content;
@@ -102,9 +102,7 @@ define(function(require, exports, module) {
         contentWindow.setContent(cleanedBodyContent, currentFilePath);
       }, 500);
     }
-  };
-
-  var contentVersion = 0;
+  }
 
   function resetContentVersion() {
     contentVersion = 0;
@@ -124,8 +122,6 @@ define(function(require, exports, module) {
     }
     window.setTimeout(checkContentChanged, 1000);
   }
-
-  window.setTimeout(checkContentChanged, 1000);
 
   function getContent() {
     var content = $("#iframeViewer").contents().find(".note-editable").html();
@@ -159,7 +155,7 @@ define(function(require, exports, module) {
     //console.log("Final html "+htmlContent);
     resetContentVersion();
     return htmlContent;
-  };
+  }
 
   exports.init = init;
   exports.getContent = getContent;
