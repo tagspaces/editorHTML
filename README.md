@@ -1,4 +1,4 @@
-# HTML Editor
+# HTML Editor for TagSpaces
 
 A TagSpaces extension allowing editing of HTML documents.
 
@@ -26,11 +26,9 @@ The source code of this extension is freely available on [github.com/tagspaces/e
 
 If you want to extend this extensions, please follow our general [extension development guide](http://tagspaces.org/documentation/extension-development-guide)
 
-
 ## Screenshots
 
 ![Screenshot of the HTML editor running in the Linux version of TagSpaces](http://tagspaces.org/extensions/editorHTML/editorHTML-screenshot.png)
-
 
 ## License
 
