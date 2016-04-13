@@ -1,3 +1,4 @@
+/* globals marked */
 "use strict";
 
 var isCordova = parent.isCordova;
@@ -37,6 +38,7 @@ function initEditor() {
   $htmlEditor.summernote({
     focus: true,
     height: "100%",
+    disableDragAndDrop: true,
     toolbar: toolbar,
     onkeyup: function() {
       contentVersion++;
@@ -69,4 +71,44 @@ function setContent(content, currentFilePath) {
   } else {
     // window.setTimeout(initEditor(), 1000);
   }
+  
+  $(document).on('drop dragend dragenter dragover', function(event) {
+    event.preventDefault();
+  });  
+  
+  $('#aboutExtensionModal').on('show.bs.modal', function() {
+    $.ajax({
+      url: 'README.md',
+      type: 'GET'
+    })
+    .done(function(mdData) {
+      //console.log("DATA: " + mdData);
+      if (marked) {
+        var modalBody = $("#aboutExtensionModal .modal-body");
+        modalBody.html(marked(mdData, { sanitize: true }));
+        handleLinks(modalBody);
+      } else {
+        console.log("markdown to html transformer not found");
+      }  
+    })
+    .fail(function(data) {
+      console.warn("Loading file failed " + data);
+    });
+  });
+  
+  $("#printButton").on("click", function() {
+    $(".dropdown-menu").dropdown('toggle');
+    window.print();
+  });  
+}
+
+function handleLinks($element) {
+  $element.find("a[href]").each(function() {
+    var currentSrc = $(this).attr("href");
+    $(this).bind('click', function(e) {
+      e.preventDefault();
+      var msg = {command: "openLinkExternally", link : currentSrc};
+      window.parent.postMessage(JSON.stringify(msg), "*");
+    });
+  });
 }

@@ -37,7 +37,7 @@ define(function(require, exports, module) {
     var extPath = extensionDirectory + "/index.html";
     $containerElement.append($('<iframe>', {
       id: "iframeViewer",
-      sandbox: "allow-same-origin allow-scripts",
+      sandbox: "allow-same-origin allow-scripts allow-modals",      
       scrolling: "no",
       style: "background-color: white; overflow: hidden;",
       src: extPath + "?cp=" + filePath + "&setLng=" + TSCORE.currentLanguage,
