@@ -4,78 +4,71 @@
 var isCordova = parent.isCordova;
 var $htmlEditor;
 
-var toolbar = [
-  ['style', ['style']],
-  ['color', ['color']],
-  ['font', ['bold', 'italic', 'underline']],
-  ['font2', ['superscript', 'subscript', 'strikethrough', 'clear']],
-  ['fontname', ['fontname']],
-  // ['fontsize', ['fontsize']],
-  ['para', ['ul', 'ol', 'paragraph']],
-  ['height', ['height']],
-  ['table', ['table']],
-  ['insert', ['link', 'picture', 'hr']], // 'video',
-  ['view', ['codeview']], // 'fullscreen',
-  ['help', ['help']]
-];
-
-if (isCordova) {
-  toolbar = [
-    ['color', ['color']],
+function initEditor() {
+  var toolbar = [
     ['style', ['style']],
-    ['para', ['paragraph', 'ul', 'ol']],
+    ['color', ['color']],
     ['font', ['bold', 'italic', 'underline']],
     ['font2', ['superscript', 'subscript', 'strikethrough', 'clear']],
-    //['fontsize', ['fontsize']],
+    ['fontname', ['fontname']],
+    // ['fontsize', ['fontsize']],
+    ['para', ['ul', 'ol', 'paragraph']],
     ['height', ['height']],
-    ['insert', ['picture', 'link', 'hr']],
     ['table', ['table']],
-    ['view', ['codeview']]
+    ['insert', ['link', 'picture', 'hr']], // 'video',
+    ['view', ['codeview']], // 'fullscreen',
+    ['help', ['help']]
   ];
-}
 
-function initEditor() {
+  if (isCordova) {
+    toolbar = [
+      ['color', ['color']],
+      ['style', ['style']],
+      ['para', ['paragraph', 'ul', 'ol']],
+      ['font', ['bold', 'italic', 'underline']],
+      ['font2', ['superscript', 'subscript', 'strikethrough', 'clear']],
+      //['fontsize', ['fontsize']],
+      ['height', ['height']],
+      ['insert', ['picture', 'link', 'hr']],
+      ['table', ['table']],
+      ['view', ['codeview']]
+    ];
+  }
+
   $htmlEditor.summernote({
     focus: true,
     height: "100%",
     disableDragAndDrop: true,
     toolbar: toolbar,
     onkeyup: function() {
-      contentVersion++;
-      //            window.parent.postMessage('par1', '*');
-    }
+      var msg = {command: "contentChangedInEditor" , filepath: ""};
+      window.parent.postMessage(JSON.stringify(msg) , "*");
+    },
+    /*onkeydown: function(e) {
+      //console.log("Keyevent " + e);
+      //if((e.ctrlKey || e.metaKey) && e) {
+      //var msg = {command: "saveFileInEditor" , filepath: ""};
+      //window.parent.postMessage(JSON.stringify(msg) , "*");
+      //}
+    }*/
   });
+
+  /*Mousetrap.bind(['command+s', 'ctrl+s'], function(e) {
+    alert("Saving");
+    return false;
+  });*/
 }
 
-var contentVersion = 0;
-
-function resetContentVersion() {
-  contentVersion = 0;
-}
-
-function getContentVersion() {
-  return contentVersion;
-}
-
-function setContent(content, currentFilePath) {
-  resetContentVersion();
-
-  // adjusting releative paths
-  $("base").attr("href", currentFilePath);
-
-  $htmlEditor = $('#htmlEditor');
-  $htmlEditor.append(content);
-  // Check if summernote is loaded
-  if (typeof $htmlEditor.summernote === 'function') {
-    initEditor();
-  } else {
-    // window.setTimeout(initEditor(), 1000);
+$(document).ready(function() {
+  function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
   }
-  
-  $(document).on('drop dragend dragenter dragover', function(event) {
-    event.preventDefault();
-  });  
-  
+
+  var locale = getParameterByName("locale");
+
   $('#aboutExtensionModal').on('show.bs.modal', function() {
     $.ajax({
       url: 'README.md',
@@ -89,17 +82,40 @@ function setContent(content, currentFilePath) {
         handleLinks(modalBody);
       } else {
         console.log("markdown to html transformer not found");
-      }  
+      }
     })
     .fail(function(data) {
       console.warn("Loading file failed " + data);
     });
   });
-  
-  $("#printButton").on("click", function() {
-    $(".dropdown-menu").dropdown('toggle');
-    window.print();
-  });  
+
+  $(document).on('drop dragend dragenter dragover', function(event) {
+    event.preventDefault();
+  });
+
+  // Init internationalization
+  $.i18n.init({
+    ns: {namespaces: ['ns.editorHTML']} ,
+    debug: true ,
+    lng: locale ,
+    fallbackLng: 'en_US'
+  } , function() {
+    $('[data-i18n]').i18n();
+  });
+});
+
+function setContent(content, currentFilePath) {
+  // adjusting relative paths
+  //$("base").attr("href", currentFilePath);
+
+  $htmlEditor = $('#htmlEditor');
+  $htmlEditor.append(content);
+  // Check if summernote is loaded
+  if (typeof $htmlEditor.summernote === 'function') {
+    initEditor();
+  } else {
+    // window.setTimeout(initEditor(), 1000);
+  }
 }
 
 function handleLinks($element) {

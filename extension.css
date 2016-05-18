@@ -1,6 +1,9 @@
+@import '../../assets/extensions.css';
+
 html, body {
     height: 100%;
     font-size: 13px;
+    padding: 0 !important;
 }
 
 .note-editor {
@@ -16,7 +19,29 @@ html, body {
     overflow: auto;
 }
 
+#aboutExtensionModal img {
+  max-width: 100%;
+}
+
+#aboutExtensionModal h1 {
+  font-size: 22px;
+}
+
+#aboutExtensionModal h2 {
+  font-size: 20px;
+}
+
+#aboutExtensionModal h3 {
+  font-size: 18px;
+}
+
+#aboutExtensionModal .modal-body {
+  max-height: 500px;
+  overflow: auto;
+}
+
 /* Custom scrollbars for chrome */
+/*
 ::-webkit-scrollbar-track
 {
     background-color: transparent;
@@ -32,4 +57,4 @@ html, body {
 ::-webkit-scrollbar-thumb
 {
     background-color: #bbb;
-}
+}*/

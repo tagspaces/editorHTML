@@ -13,12 +13,12 @@ define(function(require, exports, module) {
   var extensionsPath = TSCORE.Config.getExtensionPath();
   var extensionDirectory = extensionsPath + "/" + extensionID;
   var fileDirectory;
-  var currentContent,
-    currentFilePath,
-    $containerElement;
+  var currentContent;
+  var currentFilePath;
+  var $containerElement;
   var contentVersion = 0;
-
-  window.setTimeout(checkContentChanged, 1000);
+  var sourceURL = "";
+  var scrapedOn = "";
 
   function init(filePath, containerElementID) {
     console.log("Initalization HTML Editor...");
@@ -28,8 +28,6 @@ define(function(require, exports, module) {
     $containerElement = $('#' + containerElementID);
 
     currentFilePath = filePath;
-
-    //var fileExt = TSCORE.TagUtils.extractFileExtension(filePath);
 
     $containerElement.empty();
     $containerElement.css("background-color", "white");
@@ -55,11 +53,6 @@ define(function(require, exports, module) {
         console.error("Loading file " + filePath + " failed " + error);
       }
     );
-    //if (!window.addEventListener) {
-    //  window.attachEvent('onmessage', function(e) {alert(e.origin);alert(e.data);});
-    //} else {
-    //  window.addEventListener('message', function(e) {alert(e.origin);alert(e.data);}, false);
-    //}
   }
 
   function setFileType(fileType) {
@@ -75,16 +68,28 @@ define(function(require, exports, module) {
   function setContent(content) {
     currentContent = content;
 
-    var bodyRegex = /\<body[^>]*\>([^]*)\<\/body/m; // jshint ignore:line
     var bodyContent;
 
     try {
+      var bodyRegex = /\<body[^>]*\>([^]*)\<\/body/m; // jshint ignore:line
       bodyContent = content.match(bodyRegex)[1];
     } catch (e) {
       console.log("Error parsing the body of the HTML document. " + e);
       bodyContent = content;
-      //TSCORE.FileOpener.closeFile(true);
-      //TSCORE.showAlertDialog("Probably a body tag was not found in the document. Document will be closed.", "Error parsing HTML document");
+    }
+
+    try {
+      var scrapedOnRegex = /data-scrapedOn='([^']*)'/m; // jshint ignore:line
+      scrapedOn = content.match(scrapedOnRegex)[1];
+    } catch (e) {
+      console.log("Error parsing the meta from the HTML document. " + e);
+    }
+
+    try {
+      var sourceURLRegex = /data-sourceUrl='([^']*)'/m; // jshint ignore:line
+      sourceURL = content.match(sourceURLRegex)[1];
+    } catch (e) {
+      console.log("Error parsing the meta from the HTML document. " + e);
     }
 
     //var titleRegex = /\<title[^>]*\>([^]*)\<\/title/m;
@@ -102,25 +107,6 @@ define(function(require, exports, module) {
         contentWindow.setContent(cleanedBodyContent, currentFilePath);
       }, 500);
     }
-  }
-
-  function resetContentVersion() {
-    contentVersion = 0;
-    document.getElementById("iframeViewer").contentWindow.resetContentVersion();
-  }
-
-  function checkContentChanged() {
-    var newContentVersion;
-    try {
-      newContentVersion = document.getElementById("iframeViewer").contentWindow.getContentVersion();
-    } catch (e) {}
-    if (newContentVersion > contentVersion) {
-      contentVersion = newContentVersion;
-      TSCORE.FileOpener.setFileChanged(true);
-      // autosave
-      //TSCORE.FileOpener.saveFile();
-    }
-    window.setTimeout(checkContentChanged, 1000);
   }
 
   function getContent() {
@@ -149,11 +135,10 @@ define(function(require, exports, module) {
     });
     // end saving all images
 
-    cleanedContent = "<body>" + cleanedContent + "</body>";
+    cleanedContent = "<body data-sourceUrl='" + sourceURL + "' data-scrapedOn='" + scrapedOn + "' >" + cleanedContent + "</body>";
 
     var htmlContent = currentContent.replace(/\<body[^>]*\>([^]*)\<\/body>/m, cleanedContent); // jshint ignore:line
     //console.log("Final html "+htmlContent);
-    resetContentVersion();
     return htmlContent;
   }
 
