@@ -5,7 +5,7 @@
   "type": "editor",
   "version": "1.0.0",
   "dependencies": {
-    "summernote": "~0.5.10"
+    "summernote": "~0.8.1"
   },
   "devDependencies": {},
   "authors": [

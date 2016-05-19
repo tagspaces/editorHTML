@@ -26,31 +26,34 @@ function initEditor() {
       ['style', ['style']],
       ['para', ['paragraph', 'ul', 'ol']],
       ['font', ['bold', 'italic', 'underline']],
-      ['font2', ['superscript', 'subscript', 'strikethrough', 'clear']],
-      //['fontsize', ['fontsize']],
-      ['height', ['height']],
+      //['font2', ['superscript', 'subscript', 'strikethrough', 'clear']],
+      ['fontsize', ['fontsize']],
+      //['height', ['height']],
       ['insert', ['picture', 'link', 'hr']],
       ['table', ['table']],
-      ['view', ['codeview']]
+      //['view', ['codeview']]
     ];
   }
 
   $htmlEditor.summernote({
     focus: true,
-    height: "100%",
+    height: "200px",
     disableDragAndDrop: true,
     toolbar: toolbar,
-    onkeyup: function() {
-      var msg = {command: "contentChangedInEditor" , filepath: ""};
-      window.parent.postMessage(JSON.stringify(msg) , "*");
-    },
-    /*onkeydown: function(e) {
-      //console.log("Keyevent " + e);
-      //if((e.ctrlKey || e.metaKey) && e) {
-      //var msg = {command: "saveFileInEditor" , filepath: ""};
-      //window.parent.postMessage(JSON.stringify(msg) , "*");
-      //}
-    }*/
+    callbacks: {
+      onChange: function(contents, $editable) {
+        //console.log('onChange:', contents, $editable);
+        var msg = {command: "contentChangedInEditor" , filepath: ""};
+        window.parent.postMessage(JSON.stringify(msg) , "*");
+      }
+    }
+  });
+
+  // set note-editable panel-body to window height initially and on frame resize
+  $(".note-editable.panel-body").height(window.innerHeight-80);
+  $(window).on('resize', function(){
+    $(".note-editable.panel-body").height(window.innerHeight-80);
+    //console.log(window.innerHeight);
   });
 
   /*Mousetrap.bind(['command+s', 'ctrl+s'], function(e) {
