@@ -50,9 +50,9 @@ function initEditor() {
   });
 
   // set note-editable panel-body to window height initially and on frame resize
-  $(".note-editable.panel-body").height(window.innerHeight-80);
-  $(window).on('resize', function(){
-    $(".note-editable.panel-body").height(window.innerHeight-80);
+  $(".note-editable.panel-body").height(window.innerHeight - 80);
+  $(window).on('resize', function() {
+    $(".note-editable.panel-body").height(window.innerHeight - 80);
     //console.log(window.innerHeight);
   });
 
