@@ -44,14 +44,14 @@ define(function(require, exports, module) {
     }));
 
     TSCORE.IO.loadTextFilePromise(filePath).then(function(content) {
-              //TSPOSTIO.loadTextFile(content);
-              exports.setContent(content);
-            },
-            function(error) {
-              TSCORE.hideLoadingAnimation();
-              TSCORE.showAlertDialog("Loading " + filePath + " failed.");
-              console.error("Loading file " + filePath + " failed " + error);
-            }
+        //TSPOSTIO.loadTextFile(content);
+        exports.setContent(content);
+      },
+      function(error) {
+        TSCORE.hideLoadingAnimation();
+        TSCORE.showAlertDialog("Loading " + filePath + " failed.");
+        console.error("Loading file " + filePath + " failed " + error);
+      }
     );
   }
 
@@ -122,10 +122,10 @@ define(function(require, exports, module) {
     var cleanedContent = content.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
 
     // saving all images as png in base64 format
-    var match,
-            urls = [],
-            imgUrl = "",
-            rex = /<img.*?src="([^">]*\/([^">]*?))".*?>/g;
+    var match;
+    var urls = [];
+    var imgUrl = "";
+    var rex = /<img.*?src="([^">]*\/([^">]*?))".*?>/g;
 
     while (match = rex.exec(cleanedContent)) {
       imgUrl = match[1];
