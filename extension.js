@@ -18,7 +18,7 @@ define(function(require, exports, module) {
   var $containerElement;
   var contentVersion = 0;
   var sourceURL = "";
-  var scrappedOn = "";
+  var scrapedOn = "";
 
   function init(filePath, containerElementID) {
     console.log("Initalization HTML Editor...");
@@ -35,7 +35,7 @@ define(function(require, exports, module) {
     var extPath = extensionDirectory + "/index.html";
     $containerElement.append($('<iframe>', {
       id: "iframeViewer",
-      sandbox: "allow-same-origin allow-scripts allow-modals",      
+      sandbox: "allow-same-origin allow-scripts allow-modals",
       scrolling: "no",
       style: "background-color: white; overflow: hidden;",
       src: extPath + "?cp=" + filePath + "&setLng=" + TSCORE.currentLanguage,
@@ -44,14 +44,14 @@ define(function(require, exports, module) {
     }));
 
     TSCORE.IO.loadTextFilePromise(filePath).then(function(content) {
-        //TSPOSTIO.loadTextFile(content);
-        exports.setContent(content);
-      },
-      function(error) {
-        TSCORE.hideLoadingAnimation();
-        TSCORE.showAlertDialog("Loading " + filePath + " failed.");
-        console.error("Loading file " + filePath + " failed " + error);
-      }
+              //TSPOSTIO.loadTextFile(content);
+              exports.setContent(content);
+            },
+            function(error) {
+              TSCORE.hideLoadingAnimation();
+              TSCORE.showAlertDialog("Loading " + filePath + " failed.");
+              console.error("Loading file " + filePath + " failed " + error);
+            }
     );
   }
 
@@ -69,34 +69,41 @@ define(function(require, exports, module) {
     currentContent = content;
 
     var bodyContent;
+    var cleanedBodyContent;
+    var bodyRegex = /\<body[^>]*\>([^]*)\<\/body/m; // jshint ignore:line
 
-    try {
-      var bodyRegex = /\<body[^>]*\>([^]*)\<\/body/m; // jshint ignore:line
-      bodyContent = content.match(bodyRegex)[1];
-    } catch (e) {
-      console.log("Error parsing the body of the HTML document. " + e);
-      bodyContent = content;
+    if (content.length > 3) {
+      try {
+        bodyContent = content.match(bodyRegex)[1];
+      } catch (e) {
+        console.log("Error parsing the body of the HTML document. " + e);
+        bodyContent = content;
+      }
+
+      //try {
+      //  var scrapedOnRegex = /data-scrapedOn='([^']*)'/m; // jshint ignore:line
+      //  scrapedOn = content.match(scrapedOnRegex)[1];
+      //} catch (e) {
+      //  console.log("Error parsing the meta from the HTML document. " + e);
+      //}
+      //
+      //try {
+      //  var sourceURLRegex = /data-sourceUrl='([^']*)'/m; // jshint ignore:line
+      //  sourceURL = content.match(sourceURLRegex)[1];
+      //} catch (e) {
+      //  console.log("Error parsing the meta from the HTML document. " + e);
+      //}
+
+      //var titleRegex = /\<title[^>]*\>([^]*)\<\/title/m;
+      //var titleContent = content.match( titleRegex )[1];
+
+      // removing all scripts from the document
+    } else{
+
+      var newBodyContent = TSCORE.Config.DefaultSettings.newHTMLFileContent;
+      bodyContent = newBodyContent.match(bodyRegex)[1];
     }
-
-    try {
-      var scrappedOnRegex = /data-scrappedon='([^']*)'/m; // jshint ignore:line
-      scrappedOn = content.match(scrappedOnRegex)[1];
-    } catch (e) {
-      console.log("Error parsing the meta from the HTML document. " + e);
-    }
-
-    try {
-      var sourceURLRegex = /data-sourceUrl='([^']*)'/m; // jshint ignore:line
-      sourceURL = content.match(sourceURLRegex)[1];
-    } catch (e) {
-      console.log("Error parsing the meta from the HTML document. " + e);
-    }
-
-    //var titleRegex = /\<title[^>]*\>([^]*)\<\/title/m;
-    //var titleContent = content.match( titleRegex )[1];
-
-    // removing all scripts from the document
-    var cleanedBodyContent = bodyContent.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
+    cleanedBodyContent = bodyContent.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
 
     var contentWindow = document.getElementById("iframeViewer").contentWindow;
     if (typeof contentWindow.setContent === "function") {
@@ -117,9 +124,9 @@ define(function(require, exports, module) {
 
     // saving all images as png in base64 format
     var match,
-      urls = [],
-      imgUrl = "",
-      rex = /<img.*?src="([^">]*\/([^">]*?))".*?>/g;
+            urls = [],
+            imgUrl = "",
+            rex = /<img.*?src="([^">]*\/([^">]*?))".*?>/g;
 
     while (match = rex.exec(cleanedContent)) {
       imgUrl = match[1];
@@ -135,7 +142,7 @@ define(function(require, exports, module) {
     });
     // end saving all images
 
-    cleanedContent = "<body data-sourceurl='" + sourceURL + "' data-scrappedon='" + scrappedOn + "' >" + cleanedContent + "</body>";
+    cleanedContent = "<body data-sourceUrl='" + sourceURL + "' data-scrapedOn='" + scrapedOn + "' >" + cleanedContent + "</body>";
 
     var htmlContent = currentContent.replace(/\<body[^>]*\>([^]*)\<\/body>/m, cleanedContent); // jshint ignore:line
     //console.log("Final html "+htmlContent);
