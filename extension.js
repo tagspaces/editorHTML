@@ -99,9 +99,8 @@ define(function(require, exports, module) {
 
       // removing all scripts from the document
     } else{
-
-      var newBodyContent = TSCORE.Config.DefaultSettings.newHTMLFileContent;
-      bodyContent = newBodyContent.match(bodyRegex)[1];
+      currentContent = TSCORE.Config.DefaultSettings.newHTMLFileContent;
+      bodyContent = currentContent.match(bodyRegex)[1];
     }
     cleanedBodyContent = bodyContent.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
 
