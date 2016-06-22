@@ -44,14 +44,14 @@ define(function(require, exports, module) {
     }));
 
     TSCORE.IO.loadTextFilePromise(filePath).then(function(content) {
-        //TSPOSTIO.loadTextFile(content);
-        exports.setContent(content);
-      },
-      function(error) {
-        TSCORE.hideLoadingAnimation();
-        TSCORE.showAlertDialog("Loading " + filePath + " failed.");
-        console.error("Loading file " + filePath + " failed " + error);
-      }
+              //TSPOSTIO.loadTextFile(content);
+              exports.setContent(content);
+            },
+            function(error) {
+              TSCORE.hideLoadingAnimation();
+              TSCORE.showAlertDialog("Loading " + filePath + " failed.");
+              console.error("Loading file " + filePath + " failed " + error);
+            }
     );
   }
 
@@ -98,7 +98,7 @@ define(function(require, exports, module) {
       //var titleContent = content.match( titleRegex )[1];
 
       // removing all scripts from the document
-    } else{
+    } else {
       currentContent = TSCORE.Config.DefaultSettings.newHTMLFileContent;
       bodyContent = currentContent.match(bodyRegex)[1];
     }
@@ -142,7 +142,7 @@ define(function(require, exports, module) {
     // end saving all images
 
     cleanedContent = "<body data-sourceurl='" + sourceURL + "' data-scrappedon='" + scrappedOn + "' >" + cleanedContent + "</body>";
-    
+
     var htmlContent = currentContent.replace(/\<body[^>]*\>([^]*)\<\/body>/m, cleanedContent); // jshint ignore:line
     //console.log("Final html "+htmlContent);
     return htmlContent;
