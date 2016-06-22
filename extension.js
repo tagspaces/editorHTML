@@ -18,7 +18,7 @@ define(function(require, exports, module) {
   var $containerElement;
   var contentVersion = 0;
   var sourceURL = "";
-  var scrapedOn = "";
+  var scrappedOn = "";
 
   function init(filePath, containerElementID) {
     console.log("Initalization HTML Editor...");
@@ -80,22 +80,22 @@ define(function(require, exports, module) {
         bodyContent = content;
       }
 
-      //try {
-      //  var scrapedOnRegex = /data-scrapedOn='([^']*)'/m; // jshint ignore:line
-      //  scrapedOn = content.match(scrapedOnRegex)[1];
-      //} catch (e) {
-      //  console.log("Error parsing the meta from the HTML document. " + e);
-      //}
-      //
-      //try {
-      //  var sourceURLRegex = /data-sourceUrl='([^']*)'/m; // jshint ignore:line
-      //  sourceURL = content.match(sourceURLRegex)[1];
-      //} catch (e) {
-      //  console.log("Error parsing the meta from the HTML document. " + e);
-      //}
+      try {
+        var scrappedOnRegex = /data-scrappedon='([^']*)'/m; // jshint ignore:line
+        scrappedOn = content.match(scrappedOnRegex)[1];
+      } catch (e) {
+        console.log("Error parsing the meta from the HTML document. " + e);
+      }
 
-      //var titleRegex = /\<title[^>]*\>([^]*)\<\/title/m;
-      //var titleContent = content.match( titleRegex )[1];
+      try {
+        var sourceURLRegex = /data-sourceUrl='([^']*)'/m; // jshint ignore:line
+        sourceURL = content.match(sourceURLRegex)[1];
+      } catch (e) {
+        console.log("Error parsing the meta from the HTML document. " + e);
+      }
+
+      var titleRegex = /\<title[^>]*\>([^]*)\<\/title/m;
+      var titleContent = content.match( titleRegex )[1];
 
       // removing all scripts from the document
     } else{
@@ -141,8 +141,8 @@ define(function(require, exports, module) {
     });
     // end saving all images
 
-    cleanedContent = "<body data-sourceUrl='" + sourceURL + "' data-scrapedOn='" + scrapedOn + "' >" + cleanedContent + "</body>";
-
+    cleanedContent = "<body data-sourceurl='" + sourceURL + "' data-scrappedon='" + scrappedOn + "' >" + cleanedContent + "</body>";
+    
     var htmlContent = currentContent.replace(/\<body[^>]*\>([^]*)\<\/body>/m, cleanedContent); // jshint ignore:line
     //console.log("Final html "+htmlContent);
     return htmlContent;
