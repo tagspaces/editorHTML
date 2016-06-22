@@ -94,8 +94,8 @@ define(function(require, exports, module) {
         console.log("Error parsing the meta from the HTML document. " + e);
       }
 
-      var titleRegex = /\<title[^>]*\>([^]*)\<\/title/m;
-      var titleContent = content.match( titleRegex )[1];
+      //var titleRegex = /\<title[^>]*\>([^]*)\<\/title/m;
+      //var titleContent = content.match( titleRegex )[1];
 
       // removing all scripts from the document
     } else{
