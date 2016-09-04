@@ -116,7 +116,15 @@ define(function(require, exports, module) {
   }
 
   function getContent() {
+    $("#iframeViewer").contents().find(".note-editable .tsCheckBox").each(function() {
+      $(this).attr("disabled", "disabled");
+    });
+
     var content = $("#iframeViewer").contents().find(".note-editable").html();
+
+    $("#iframeViewer").contents().find(".note-editable .tsCheckBox").each(function() {
+      $(this).removeAttr("disabled");
+    });
 
     // removing all scripts from the document
     var cleanedContent = content.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
@@ -145,6 +153,7 @@ define(function(require, exports, module) {
 
     var htmlContent = currentContent.replace(/\<body[^>]*\>([^]*)\<\/body>/m, cleanedContent); // jshint ignore:line
     //console.log("Final html "+htmlContent);
+
     return htmlContent;
   }
 

@@ -6,6 +6,7 @@ var $htmlEditor;
 
 function initEditor() {
   var toolbar = [
+    ['todo', ['checkbox']],
     ['style', ['style']],
     ['color', ['color']],
     ['font', ['bold', 'italic', 'underline']],
@@ -22,6 +23,7 @@ function initEditor() {
 
   if (isCordova) {
     toolbar = [
+      ['todo', ['checkbox']],
       ['color', ['color']],
       ['style', ['style']],
       ['para', ['paragraph', 'ul', 'ol']],
@@ -57,7 +59,8 @@ function initEditor() {
   });
 
   /*Mousetrap.bind(['command+s', 'ctrl+s'], function(e) {
-    alert("Saving");
+    console.log("Fire saving event");
+    window.parent.postMessage(JSON.stringify({command: "saveDocument"}) , "*");
     return false;
   });*/
 }
@@ -89,6 +92,11 @@ function setContent(content, currentFilePath) {
 
   $htmlEditor = $('#htmlEditor');
   $htmlEditor.append(content);
+
+  $htmlEditor.find(".tsCheckBox").each(function() {
+    $(this).removeAttr("disabled");
+  });
+
   // Check if summernote is loaded
   if (typeof $htmlEditor.summernote === 'function') {
     initEditor();
