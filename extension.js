@@ -88,7 +88,7 @@ define(function(require, exports, module) {
       }
 
       try {
-        var sourceURLRegex = /data-sourceUrl='([^']*)'/m; // jshint ignore:line
+        var sourceURLRegex = /data-sourceurl='([^']*)'/m; // jshint ignore:line
         sourceURL = content.match(sourceURLRegex)[1];
       } catch (e) {
         console.log("Error parsing the meta from the HTML document. " + e);
