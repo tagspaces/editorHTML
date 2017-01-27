@@ -57,12 +57,6 @@ function initEditor() {
     $(".note-editable.panel-body").height(window.innerHeight - 80);
     //console.log(window.innerHeight);
   });
-
-  /*Mousetrap.bind(['command+s', 'ctrl+s'], function(e) {
-    console.log("Fire saving event");
-    window.parent.postMessage(JSON.stringify({command: "saveDocument"}) , "*");
-    return false;
-  });*/
 }
 
 $(document).ready(function() {
