@@ -20,21 +20,27 @@ html, body {
     overflow: auto;
 }
 
-/* Custom scrollbars for chrome */
-/*
-::-webkit-scrollbar-track
-{
-    background-color: transparent;
+.note-editing-area h1 {
+    font-size: 22px;
 }
 
-::-webkit-scrollbar
-{
-    width: 8px;
-    height: 8px;
-    background-color: #F5F5F5;
+.note-editing-area h2 {
+    font-size: 20px;
 }
 
-::-webkit-scrollbar-thumb
-{
-    background-color: #bbb;
-}*/
+.note-editing-area h3 {
+    font-size: 18px;
+}
+
+.note-editing-area h4 {
+    font-size: 16px;
+}
+
+.note-editing-area h5 {
+    font-size: 14px;
+}
+
+.note-editing-area h6 {
+    font-size: 12px;
+    font-weight: bold;
+}
