@@ -138,7 +138,12 @@ define(function(require, exports, module) {
     while (match = rex.exec(cleanedContent)) {
       imgUrl = match[1];
       console.log("URLs: " + imgUrl);
-      urls.push([imgUrl, TSCORE.Utils.getBase64Image(imgUrl)]);
+      if (imgUrl.indexOf('data:image') === 0) {
+        // Ignore data url
+      } else {
+        urls.push([imgUrl, TSCORE.Utils.getBase64Image(imgUrl)]);
+      }
+
     }
 
     urls.forEach(function(dataURLObject) {
@@ -151,9 +156,13 @@ define(function(require, exports, module) {
 
     cleanedContent = "<body data-sourceurl='" + sourceURL + "' data-scrappedon='" + scrappedOn + "' >" + cleanedContent + "</body>";
 
-    var htmlContent = currentContent.replace(/\<body[^>]*\>([^]*)\<\/body>/m, cleanedContent); // jshint ignore:line
-    //console.log("Final html "+htmlContent);
-
+    var indexOfBody = currentContent.indexOf("<body");
+    var htmlContent = "";
+    if (indexOfBody >= 0 && currentContent.indexOf("</body>") > indexOfBody) {
+      htmlContent = currentContent.replace(/\<body[^>]*\>([^]*)\<\/body>/m, cleanedContent); // jshint ignore:line
+    } else {
+      htmlContent = cleanedContent;
+    }
     return htmlContent;
   }
 
