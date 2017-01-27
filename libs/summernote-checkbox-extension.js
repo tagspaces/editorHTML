@@ -33,11 +33,16 @@
             });
 
             this.createCheckbox = function () {
-                var elem = document.createElement('input');
-                elem.type = "checkbox";
-                elem.className = "tsCheckBox";
-                return elem;
+                var checkbox = document.createElement('input');
+                checkbox.type = "checkbox";
+                checkbox.className = "tsCheckBox";
+
+                var span = document.createElement('span');
+                span.appendChild(checkbox);
+                span.text = " "
+                return span;
             }
+
 
             // This events will be attached when editor is initialized.
             this.events = {
