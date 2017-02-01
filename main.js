@@ -97,7 +97,7 @@ function initEditor() {
         'CMD+ENTER': 'insertHorizontalRule',
         'CMD+K': 'linkDialog.show'
       }
-  }
+  };
 
   $htmlEditor.summernote({
     focus: true,
