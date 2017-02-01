@@ -44,15 +44,13 @@ define(function(require, exports, module) {
     }));
 
     TSCORE.IO.loadTextFilePromise(filePath).then(function(content) {
-              //TSPOSTIO.loadTextFile(content);
-              exports.setContent(content);
-            },
-            function(error) {
-              TSCORE.hideLoadingAnimation();
-              TSCORE.showAlertDialog("Loading " + filePath + " failed.");
-              console.error("Loading file " + filePath + " failed " + error);
-            }
-    );
+      exports.setContent(content);
+    },
+    function(error) {
+      TSCORE.hideLoadingAnimation();
+      TSCORE.showAlertDialog("Loading " + filePath + " failed.");
+      console.error("Loading file " + filePath + " failed " + error);
+    });
   }
 
   function setFileType(fileType) {
