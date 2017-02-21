@@ -6,7 +6,7 @@ var $htmlEditor;
 
 function initEditor() {
   var toolbar = [
-    ['todo', ['checkbox']],
+    ['todo', ['checkbox', 'selectAll', 'deselectAll']],
     ['style', ['style']],
     ['color', ['color']],
     ['font', ['bold', 'italic', 'underline']],
@@ -23,7 +23,7 @@ function initEditor() {
 
   if (isCordova) {
     toolbar = [
-      ['todo', ['checkbox']],
+      ['todo', ['checkbox', 'selectAll', 'deselectAll']],
       ['color', ['color']],
       ['style', ['style']],
       ['para', ['paragraph', 'ul', 'ol']],
