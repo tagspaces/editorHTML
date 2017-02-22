@@ -23,7 +23,7 @@ function initEditor() {
 
   if (isCordova) {
     toolbar = [
-      ['todo', ['checkbox', 'toggleSelectAllCheckboxes']],
+      ['todo', ['checkbox', 'toggleSelectAllButton']],
       ['color', ['color']],
       ['style', ['style']],
       ['para', ['paragraph', 'ul', 'ol']],
