@@ -6,7 +6,7 @@ var $htmlEditor;
 
 function initEditor() {
   var toolbar = [
-    ['todo', ['checkbox', 'toggleSelectAllCheckboxes']],
+    ['todo', ['checkbox', 'toggleSelectAllButton']],
     ['style', ['style']],
     ['color', ['color']],
     ['font', ['bold', 'italic', 'underline']],

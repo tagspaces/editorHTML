@@ -72,23 +72,23 @@
     /**
      * @param {Object} context - context object has status of editor.
      */
-    'toggleSelectAllCheckboxes': function(context) {
+    'toggleSelectAllButton': function(context) {
       const self = this;
       const ui = $.summernote.ui;
 
-      context.memo('button.toggleSelectAllCheckboxes', function() {
+      context.memo('button.toggleSelectAllButton', function() {
         const button = ui.button({
           contents: '<i class="fa fa-check-square"/>',
           tooltip: 'Select/Deselect All Check boxes / ToDo',
           click: function() {
-            context.invoke('insertNode', self.selectAllCheckboxes());
+            context.invoke('insertNode', self.toggleSelectAllButton());
           }
         });
 
         return button.render();
       });
 
-      this.selectAllCheckboxes = function() {
+      this.toggleSelectAllButton = function() {
         const inputs = document.getElementsByTagName('input');
 
         for (var i = 0; i < inputs.length; i++) {
