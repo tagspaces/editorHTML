@@ -11,6 +11,7 @@
     factory(window.jQuery);
   }
 }(function($) {
+  var allCheckboxesSelected = false;
   // Extends plugins for adding Checkbox.
   $.extend($.summernote.plugins, {
     /**
@@ -81,7 +82,8 @@
           contents: '<i class="fa fa-check-square"/>',
           tooltip: 'Select/Deselect All Check boxes / ToDo',
           click: function() {
-            context.invoke('insertNode', self.toggleSelectAllButton());
+            //context.invoke('insertNode', self.toggleSelectAllButton());
+            self.toggleSelectAllButton();
           }
         });
 
@@ -89,15 +91,16 @@
       });
 
       this.toggleSelectAllButton = function() {
-        const inputs = document.getElementsByTagName('input');
+        const inputs = document.getElementsByClassName('tsCheckBox');
 
         for (var i = 0; i < inputs.length; i++) {
-          if (inputs[i].className === 'tsCheckBox' && !inputs[i].hasAttribute('checked')) {
-            inputs[i].setAttribute('checked', 'checked');
-          } else {
+          if (allCheckboxesSelected) {
             inputs[i].removeAttribute('checked', 'checked');
+          } else {
+            inputs[i].setAttribute('checked', 'checked');
           }
         }
+        allCheckboxesSelected = !allCheckboxesSelected;
         return inputs;
       };
 
