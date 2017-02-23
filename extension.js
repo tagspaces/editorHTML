@@ -44,13 +44,13 @@ define(function(require, exports, module) {
     }));
 
     TSCORE.IO.loadTextFilePromise(filePath).then(function(content) {
-      exports.setContent(content);
-    },
-    function(error) {
-      TSCORE.hideLoadingAnimation();
-      TSCORE.showAlertDialog("Loading " + filePath + " failed.");
-      console.error("Loading file " + filePath + " failed " + error);
-    });
+        exports.setContent(content);
+      },
+      function(error) {
+        TSCORE.hideLoadingAnimation();
+        TSCORE.showAlertDialog("Loading " + filePath + " failed.");
+        console.error("Loading file " + filePath + " failed " + error);
+      });
   }
 
   function setFileType(fileType) {
@@ -69,6 +69,8 @@ define(function(require, exports, module) {
     var bodyContent;
     var cleanedBodyContent;
     var bodyRegex = /\<body[^>]*\>([^]*)\<\/body/m; // jshint ignore:line
+
+    replaceImgSrcToDataURL(content);
 
     if (content.length > 3) {
       try {
@@ -162,6 +164,68 @@ define(function(require, exports, module) {
       htmlContent = cleanedContent;
     }
     return htmlContent;
+  }
+
+  function getDataURL(url) {
+    return new Promise(function(resolve, reject) {
+      var image = new Image();
+
+      image.onload = function() {
+        var canvas = document.createElement('canvas');
+        canvas.width = this.naturalWidth; // or 'width' if you want a special/scaled size
+        canvas.height = this.naturalHeight; // or 'height' if you want a special/scaled size
+
+        canvas.getContext('2d').drawImage(this, 0, 0);
+
+        // Get raw image data
+        //resolve(canvas.toDataURL('image/png').replace(/^data:image\/(png|jpg);base64,/, ''));
+
+        // ... or get as Data URI
+        resolve(canvas.toDataURL('image/png'));
+      };
+
+      image.src = url;
+      console.log(url)
+    });
+  }
+
+  function replaceImgSrcToDataURL(content) {
+    // saving all images as png in base64 format
+    var match;
+    var urls = [];
+    var imgUrl = "";
+    var regEx = /<img.*?src="([^">]*\/([^">]*?))".*?>/g;
+    var htmlContent = "";
+
+    while (match = regEx.exec(content)) {
+      //console.log(match)
+      imgUrl = match[1];
+      //console.log("URLs: " + imgUrl);
+      console.log(getDataURL(imgUrl))
+      //getDataURL(imgUrl);
+      if (imgUrl.indexOf('data:image') === 0) {
+        // Ignore data url
+      } else {
+        //console.log(TSCORE.Utils.getBase64Image(imgUrl))
+        urls.push([imgUrl, getDataURL(imgUrl)]);
+      }
+
+    }
+    //console.debug(urls)
+    urls.forEach(function(dataURLObject) {
+      htmlContent = content.replace(regEx, dataURLObject[1]);
+
+      if (dataURLObject[1].length > 7) {
+        //content = content.split(dataURLObject[0]).join(dataURLObject[1]);
+      }
+
+      //console.log(dataURLObject[0]+" - "+dataURLObject[1]);
+    });
+
+    console.log('============')
+    console.log(htmlContent)
+    //console.log(content)
+    console.log('============')
   }
 
   exports.init = init;
