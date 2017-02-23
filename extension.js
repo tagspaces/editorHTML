@@ -169,23 +169,25 @@ define(function(require, exports, module) {
   function getDataURL(url) {
     return new Promise(function(resolve, reject) {
       var image = new Image();
+      try {
+        image.onload = function() {
+          var canvas = document.createElement('canvas');
+          canvas.width = this.naturalWidth; // or 'width' if you want a special/scaled size
+          canvas.height = this.naturalHeight; // or 'height' if you want a special/scaled size
 
-      image.onload = function() {
-        var canvas = document.createElement('canvas');
-        canvas.width = this.naturalWidth; // or 'width' if you want a special/scaled size
-        canvas.height = this.naturalHeight; // or 'height' if you want a special/scaled size
+          canvas.getContext('2d').drawImage(this, 0, 0);
 
-        canvas.getContext('2d').drawImage(this, 0, 0);
+          // Get raw image data
+          //resolve(canvas.toDataURL('image/png').replace(/^data:image\/(png|jpg);base64,/, ''));
 
-        // Get raw image data
-        //resolve(canvas.toDataURL('image/png').replace(/^data:image\/(png|jpg);base64,/, ''));
+          // ... or get as Data URI
+          resolve(canvas.toDataURL('image/png'));
+        };
 
-        // ... or get as Data URI
-        resolve(canvas.toDataURL('image/png'));
-      };
-
-      image.src = url;
-      console.log(url)
+        image.src = url;
+      } catch (err) {
+        console.log('Error handler:' + err);
+      }
     });
   }
 
