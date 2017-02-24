@@ -26,7 +26,7 @@
       context.memo('button.checkbox', function() {
         const button = ui.button({
           contents: '<i class="fa fa-check"/>',
-          tooltip: 'Add Checkbox / ToDo',
+          tooltip: 'Add Checkbox(To-do)',
           click: function() {
             context.invoke('insertNode', self.createCheckbox());
           }
@@ -80,7 +80,7 @@
       context.memo('button.toggleSelectAllButton', function() {
         const button = ui.button({
           contents: '<i class="fa fa-check-square"/>',
-          tooltip: 'Select/Deselect All Check boxes / ToDo',
+          tooltip: 'Toggle All Checkboxes(To-dos)',
           click: function() {
             //context.invoke('insertNode', self.toggleSelectAllButton());
             self.toggleSelectAllButton();
