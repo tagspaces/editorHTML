@@ -72,6 +72,8 @@ define(function(require, exports, module) {
 
     replaceImgSrcToDataURL(content);
 
+
+
     if (content.length > 3) {
       try {
         bodyContent = content.match(bodyRegex)[1];
@@ -166,7 +168,7 @@ define(function(require, exports, module) {
     return htmlContent;
   }
 
-  function getDataURL(url) {
+  function generateDataUrlToImg(url) {
     return new Promise(function(resolve, reject) {
       var image = new Image();
       try {
@@ -182,8 +184,8 @@ define(function(require, exports, module) {
 
           // ... or get as Data URI
           resolve(canvas.toDataURL('image/png'));
+          image = canvas = null;
         };
-
         image.src = url;
       } catch (err) {
         console.log('Error handler:' + err);
@@ -197,37 +199,41 @@ define(function(require, exports, module) {
     var urls = [];
     var imgUrl = "";
     var regEx = /<img.*?src="([^">]*\/([^">]*?))".*?>/g;
-    var htmlContent = "";
 
     while (match = regEx.exec(content)) {
-      //console.log(match)
       imgUrl = match[1];
       //console.log("URLs: " + imgUrl);
-      console.log(getDataURL(imgUrl))
-      //getDataURL(imgUrl);
       if (imgUrl.indexOf('data:image') === 0) {
         // Ignore data url
       } else {
+        var img = null;
         //console.log(TSCORE.Utils.getBase64Image(imgUrl))
-        urls.push([imgUrl, getDataURL(imgUrl)]);
-      }
+        generateDataUrlToImg(imgUrl).then(function(imgDataUrl) {
+          generateContent(content, imgDataUrl);
+          resolve(imgDataUrl);
+        });
 
+        urls.push([imgUrl, img]);
+      }
     }
-    //console.debug(urls)
+
     urls.forEach(function(dataURLObject) {
-      htmlContent = content.replace(regEx, dataURLObject[1]);
-
-      if (dataURLObject[1].length > 7) {
-        //content = content.split(dataURLObject[0]).join(dataURLObject[1]);
-      }
-
+      //console.log(dataURLObject)
+      //htmlContent = content.replace(regEx, dataURLObject[1]);
+      //if (dataURLObject[1].length > 7) {
+      //  content = content.split(dataURLObject[0]).join(dataURLObject[1]);
+      //}
       //console.log(dataURLObject[0]+" - "+dataURLObject[1]);
     });
+  }
 
-    console.log('============')
-    console.log(htmlContent)
-    //console.log(content)
-    console.log('============')
+  function generateContent(content, dataURLObject){
+    //console.log(dataURLObject)
+    var regEx = /<img.*?src="([^">]*\/([^">]*?))".*?>/g;
+    var htmlContent = "";
+    var imgSrc = '<img src='+dataURLObject+'>';
+    //htmlContent = content.replace(regEx, imgSrc);
+    //console.debug(htmlContent)
   }
 
   exports.init = init;
