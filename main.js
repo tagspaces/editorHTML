@@ -12,7 +12,7 @@ function initEditor() {
     ['font', ['bold', 'italic', 'underline']],
     ['font2', ['superscript', 'subscript', 'strikethrough', 'clear']],
     ['fontname', ['fontname']],
-    // ['fontsize', ['fontsize']],
+    ['fontsize', ['fontsize']],
     ['para', ['ul', 'ol', 'paragraph']],
     ['height', ['height']],
     ['table', ['table']],
