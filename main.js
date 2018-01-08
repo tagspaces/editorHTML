@@ -1,5 +1,8 @@
+/* Copyright (c) 2013-present The TagSpaces Authors.
+ * Use of this source code is governed by the MIT license which can be found in the LICENSE.txt file. */
+
 /* globals marked */
-"use strict";
+'use strict';
 
 var isCordova = parent.isCordova;
 var $htmlEditor;
@@ -101,57 +104,56 @@ function initEditor() {
 
   $htmlEditor.summernote({
     focus: true,
-    height: "200px",
+    height: '200px',
     disableDragAndDrop: true,
     toolbar: toolbar,
     keyMap: keyMapping,
     callbacks: {
       onChange: function(contents, $editable) {
-        //console.log('onChange:', contents, $editable);
-        var msg = {command: "contentChangedInEditor" , filepath: ""};
-        window.parent.postMessage(JSON.stringify(msg) , "*");
+        sendMessageToHost({command: 'contentChangedInEditor' , filepath: ''});
       }
     }
   });
 
   // set note-editable panel-body to window height initially and on frame resize
-  $(".note-editable.panel-body").height(window.innerHeight - 80);
+  $('.note-editable.panel-body').height(window.innerHeight - 80);
   $(window).on('resize', function() {
-    $(".note-editable.panel-body").height(window.innerHeight - 80);
+    $('.note-editable.panel-body').height(window.innerHeight - 80);
     //console.log(window.innerHeight);
   });
 }
 
 $(document).ready(function() {
   function getParameterByName(name) {
-    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+    name = name.replace(/[\[]/, '\\\[').replace(/[\]]/, '\\\]');
+    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)'),
             results = regex.exec(location.search);
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
   }
 
-  var locale = getParameterByName("locale");
+  var locale = getParameterByName('locale');
 
   // Init internationalization
-  $.i18n.init({
+  i18next.init({
     ns: {namespaces: ['ns.editorHTML']} ,
     debug: true ,
     lng: locale ,
     fallbackLng: 'en_US'
   } , function() {
-    $('[data-i18n]').i18n();
+    jqueryI18next.init(i18next, $);
+    $('[data-i18n]').localize();
   });
 });
 
 function setContent(content, currentFilePath) {
   // adjusting relative paths
-  //$("base").attr("href", currentFilePath);
+  //$('base').attr('href', currentFilePath);
 
   $htmlEditor = $('#htmlEditor');
   $htmlEditor.append(content);
 
-  $htmlEditor.find(".tsCheckBox").each(function() {
-    $(this).removeAttr("disabled");
+  $htmlEditor.find('.tsCheckBox').each(function() {
+    $(this).removeAttr('disabled');
   });
 
   // Check if summernote is loaded

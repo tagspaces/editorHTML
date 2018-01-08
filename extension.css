@@ -1,5 +1,4 @@
-@import '../../assets/extensions.css';
-@import '../../libs/extCommon/common.css';
+@import '../legacy-ext/common.css';
 
 html, body {
     height: 100%;
