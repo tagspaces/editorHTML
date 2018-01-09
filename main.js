@@ -146,12 +146,57 @@ $(document).ready(function() {
   });
 });
 
-function setContent(content, currentFilePath) {
+var sourceURL = "";
+var currentContent;
+var scrappedOn = "";
+
+function setContent(content, filePath) {
   // adjusting relative paths
   //$('base').attr('href', currentFilePath);
+  currentContent = content;
+
+  var bodyContent;
+  var cleanedBodyContent;
+  var bodyRegex = /\<body[^>]*\>([^]*)\<\/body/m; // jshint ignore:line
+
+  if (content.length > 3) {
+    try {
+      bodyContent = content.match(bodyRegex)[1];
+    } catch (e) {
+      console.log('Error parsing the body of the HTML document. ' + e);
+      bodyContent = content;
+    }
+
+    try {
+      var scrappedOnRegex = /data-scrappedon='([^']*)'/m; // jshint ignore:line
+      scrappedOn = content.match(scrappedOnRegex)[1];
+    } catch (e) {
+      console.log('Error parsing the meta from the HTML document. ' + e);
+    }
+
+    try {
+      var sourceURLRegex = /data-sourceurl='([^']*)'/m; // jshint ignore:line
+      sourceURL = content.match(sourceURLRegex)[1];
+    } catch (e) {
+      console.log('Error parsing the meta from the HTML document. ' + e);
+    }
+
+    // var titleRegex = /\<title[^>]*\>([^]*)\<\/title/m;
+    // var titleContent = content.match( titleRegex )[1];
+
+    // removing all scripts from the document
+  } else {
+    // currentContent = TSCORE.Config.DefaultSettings.newHTMLFileContent;
+    try {
+      bodyContent = currentContent.match(bodyRegex)[1];
+    } catch (e) {
+      console.log('Error parsing the meta from the HTML document. ' + e);
+    }
+  }
+  cleanedBodyContent = bodyContent.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
 
   $htmlEditor = $('#htmlEditor');
-  $htmlEditor.append(content);
+  $htmlEditor.append(cleanedBodyContent);
 
   $htmlEditor.find('.tsCheckBox').each(function() {
     $(this).removeAttr('disabled');
