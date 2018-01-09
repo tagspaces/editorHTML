@@ -3,6 +3,7 @@
 
 /* globals marked */
 'use strict';
+sendMessageToHost({command: 'loadDefaultTextContent'});
 
 var isCordova = parent.isCordova;
 var $htmlEditor;
