@@ -146,7 +146,7 @@ function setContent(content, filePath) {
   currentContent = content;
 
   var bodyContent;
-  var cleanedBodyContent;
+  var cleanedContent;
   var bodyRegex = /\<body[^>]*\>([^]*)\<\/body/m; // jshint ignore:line
 
   if (content.length > 3) {
@@ -183,10 +183,36 @@ function setContent(content, filePath) {
       console.log('Error parsing the meta from the HTML document. ' + e);
     }
   }
-  cleanedBodyContent = bodyContent.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
+  cleanedContent = bodyContent.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
+
+  // saving all images as png in base64 format
+  var match;
+  var urls = [];
+  var imgUrl = '';
+  var rex = /<img.*?src="([^">]*\/([^">]*?))".*?>/g;
+
+  while (match = rex.exec(cleanedContent)) {
+    imgUrl = match[1];
+    console.log('URLs: ' + imgUrl);
+    if (imgUrl.indexOf('data:image') === 0) {
+      // Ignore data url
+    } else {
+      urls.push([imgUrl, getBase64Image(imgUrl)]);
+    }
+  }
+
+  urls.forEach(function(dataURLObject) {
+    if (dataURLObject[1].length > 7) {
+      cleanedContent = cleanedContent.split(dataURLObject[0]).join(dataURLObject[1]);
+    }
+    //console.log(dataURLObject[0]+' - '+dataURLObject[1]);
+  });
+  // end saving all images
+
+  cleanedContent = "<body data-sourceurl='" + sourceURL + "' data-scrappedon='" + scrappedOn + "' >" + cleanedContent + "</body>";
 
   $htmlEditor = $('#htmlEditor');
-  $htmlEditor.append(cleanedBodyContent);
+  $htmlEditor.append(cleanedContent);
 
   $htmlEditor.find('.tsCheckBox').each(function() {
     $(this).removeAttr('disabled');
