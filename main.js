@@ -5,7 +5,7 @@
 'use strict';
 sendMessageToHost({command: 'loadDefaultTextContent'});
 
-var isCordova = parent.isCordova;
+// var isCordova = parent.isCordova;
 var $htmlEditor;
 
 function initEditor() {
@@ -133,17 +133,7 @@ $(document).ready(function() {
   }
 
   var locale = getParameterByName('locale');
-
-  // Init internationalization
-  i18next.init({
-    ns: {namespaces: ['ns.editorHTML']} ,
-    debug: true ,
-    lng: locale ,
-    fallbackLng: 'en_US'
-  } , function() {
-    jqueryI18next.init(i18next, $);
-    $('[data-i18n]').localize();
-  });
+  initI18N(locale, 'ns.editorHTML.json');
 });
 
 var sourceURL = "";
