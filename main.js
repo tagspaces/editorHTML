@@ -3,12 +3,13 @@
 
 /* globals marked */
 'use strict';
-sendMessageToHost({command: 'loadDefaultTextContent'});
+
+sendMessageToHost({ command: 'loadDefaultTextContent' });
 
 // var isCordova = parent.isCordova;
 var $htmlEditor;
 
-function initEditor () {
+function initEditor() {
   var toolbar = [
     ['todo', ['checkbox', 'toggleSelectAllButton']],
     ['style', ['style']],
@@ -36,17 +37,17 @@ function initEditor () {
       ['fontsize', ['fontsize']],
       //['height', ['height']],
       ['insert', ['picture', 'link', 'hr']],
-      ['table', ['table']],
+      ['table', ['table']]
       //['view', ['codeview']]
     ];
   }
 
   var keyMapping = {
     pc: {
-      'ENTER': 'insertParagraph',
+      ENTER: 'insertParagraph',
       'CTRL+Z': 'undo',
       'CTRL+Y': 'redo',
-      'TAB': 'tab',
+      TAB: 'tab',
       'SHIFT+TAB': 'untab',
       'CTRL+B': 'bold',
       'CTRL+I': 'italic',
@@ -73,10 +74,10 @@ function initEditor () {
     },
 
     mac: {
-      'ENTER': 'insertParagraph',
+      ENTER: 'insertParagraph',
       'CMD+Z': 'undo',
       'CMD+SHIFT+Z': 'redo',
-      'TAB': 'tab',
+      TAB: 'tab',
       'SHIFT+TAB': 'untab',
       'CMD+B': 'bold',
       'CMD+I': 'italic',
@@ -111,7 +112,7 @@ function initEditor () {
     keyMap: keyMapping,
     callbacks: {
       onChange: function(contents, $editable) {
-        sendMessageToHost({command: 'contentChangedInEditor', filepath: ''});
+        sendMessageToHost({ command: 'contentChangedInEditor', filepath: '' });
       }
     }
   });
@@ -129,11 +130,66 @@ $(document).ready(function() {
   initI18N(locale, 'ns.editorHTML.json');
 });
 
-var sourceURL = "";
+var sourceURL = '';
 var currentContent;
-var scrappedOn = "";
+var scrappedOn = '';
 
-function setContent (content, filePath) {
+function getContent() {
+  console.log('Getting text content from editor.');
+  $(".note-editable .tsCheckBox").each(() => {
+    $(this).attr("disabled", "disabled");
+  });
+
+  let content = $(".note-editable").html();
+
+/* Clean content
+    $("#iframeViewer").contents().find(".note-editable .tsCheckBox").each(function() {
+      $(this).removeAttr("disabled");
+    });
+
+    // removing all scripts from the document
+    var cleanedContent = content.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
+
+    // saving all images as png in base64 format
+    var match;
+    var urls = [];
+    var imgUrl = "";
+    var rex = /<img.*?src="([^">]*\/([^">]*?))".*?>/g;
+
+    while (match = rex.exec(cleanedContent)) {
+      imgUrl = match[1];
+      console.log("URLs: " + imgUrl);
+      if (imgUrl.indexOf('data:image') === 0) {
+        // Ignore data url
+      } else {
+        urls.push([imgUrl, TSCORE.Utils.getBase64Image(imgUrl)]);
+      }
+
+    }
+
+    urls.forEach(function(dataURLObject) {
+      if (dataURLObject[1].length > 7) {
+        cleanedContent = cleanedContent.split(dataURLObject[0]).join(dataURLObject[1]);
+      }
+      //console.log(dataURLObject[0]+" - "+dataURLObject[1]);
+    });
+    // end saving all images
+
+    cleanedContent = "<body data-sourceurl='" + sourceURL + "' data-scrappedon='" + scrappedOn + "' >" + cleanedContent + "</body>";
+
+    var indexOfBody = currentContent.indexOf("<body");
+    var htmlContent = "";
+    if (indexOfBody >= 0 && currentContent.indexOf("</body>") > indexOfBody) {
+      htmlContent = currentContent.replace(/\<body[^>]*\>([^]*)\<\/body>/m, cleanedContent); // jshint ignore:line
+    } else {
+      htmlContent = cleanedContent;
+    }
+*/
+
+  return content;
+}
+
+function setContent(content, filePath) {
   // adjusting relative paths
   //$('base').attr('href', currentFilePath);
   currentContent = content;
@@ -176,7 +232,10 @@ function setContent (content, filePath) {
       console.log('Error parsing the meta from the HTML document. ' + e);
     }
   }
-  cleanedContent = bodyContent.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
+  cleanedContent = bodyContent.replace(
+    /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+    ''
+  );
 
   // saving all images as png in base64 format
   var match;
@@ -184,7 +243,7 @@ function setContent (content, filePath) {
   var imgUrl = '';
   var rex = /<img.*?src="([^">]*\/([^">]*?))".*?>/g;
 
-  while (match = rex.exec(cleanedContent)) {
+  while ((match = rex.exec(cleanedContent))) {
     imgUrl = match[1];
     console.log('URLs: ' + imgUrl);
     if (imgUrl.indexOf('data:image') === 0) {
@@ -196,13 +255,22 @@ function setContent (content, filePath) {
 
   urls.forEach(function(dataURLObject) {
     if (dataURLObject[1].length > 7) {
-      cleanedContent = cleanedContent.split(dataURLObject[0]).join(dataURLObject[1]);
+      cleanedContent = cleanedContent
+        .split(dataURLObject[0])
+        .join(dataURLObject[1]);
     }
     //console.log(dataURLObject[0]+' - '+dataURLObject[1]);
   });
   // end saving all images
 
-  cleanedContent = "<body data-sourceurl='" + sourceURL + "' data-scrappedon='" + scrappedOn + "' >" + cleanedContent + "</body>";
+  cleanedContent =
+    "<body data-sourceurl='" +
+    sourceURL +
+    "' data-scrappedon='" +
+    scrappedOn +
+    "' >" +
+    cleanedContent +
+    '</body>';
 
   $htmlEditor = $('#htmlEditor');
   $htmlEditor.append(cleanedContent);
@@ -214,7 +282,5 @@ function setContent (content, filePath) {
   // Check if summernote is loaded
   if (typeof $htmlEditor.summernote === 'function') {
     initEditor();
-  } else {
-    // window.setTimeout(initEditor(), 1000);
   }
 }
