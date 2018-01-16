@@ -1,15 +1,16 @@
 /* Copyright (c) 2013-present The TagSpaces Authors.
  * Use of this source code is governed by the MIT license which can be found in the LICENSE.txt file. */
 
-/* globals marked */
+/* globals $ isCordova sendMessageToHost initI18N getParameterByName */
+
 'use strict';
 
 sendMessageToHost({ command: 'loadDefaultTextContent' });
 
-var $htmlEditor;
+let $htmlEditor;
 
 function initEditor() {
-  var toolbar = [
+  let toolbar = [
     ['todo', ['checkbox', 'toggleSelectAllButton']],
     ['style', ['style']],
     ['color', ['color']],
@@ -32,16 +33,16 @@ function initEditor() {
       ['style', ['style']],
       ['para', ['paragraph', 'ul', 'ol']],
       ['font', ['bold', 'italic', 'underline']],
-      //['font2', ['superscript', 'subscript', 'strikethrough', 'clear']],
+      // ['font2', ['superscript', 'subscript', 'strikethrough', 'clear']],
       ['fontsize', ['fontsize']],
-      //['height', ['height']],
+      // ['height', ['height']],
       ['insert', ['picture', 'link', 'hr']],
       ['table', ['table']]
-      //['view', ['codeview']]
+      // ['view', ['codeview']]
     ];
   }
 
-  var keyMapping = {
+  const keyMapping = {
     pc: {
       ENTER: 'insertParagraph',
       'CTRL+Z': 'undo',
@@ -107,44 +108,43 @@ function initEditor() {
     focus: true,
     height: '200px',
     disableDragAndDrop: true,
-    toolbar: toolbar,
+    toolbar,
     keyMap: keyMapping,
     callbacks: {
-      onChange: function(contents, $editable) {
+      onChange: () => {
         sendMessageToHost({ command: 'contentChangedInEditor', filepath: '' });
       }
     }
   });
 
-  // set note-editable panel-body to window height initially and on frame resize
-  $('.note-editable.panel-body').height(window.innerHeight - 80);
-  $(window).on('resize', function() {
-    $('.note-editable.panel-body').height(window.innerHeight - 80);
-    //console.log(window.innerHeight);
+  // Hiding the statusbar
+  $('.note-statusbar').hide();
+  // extending the height of the editor to window height initially and on window resize
+  $('.note-editable').height(window.innerHeight - 80);
+  $(window).on('resize', () => {
+    $('.note-editable').height(window.innerHeight - 80);
+    console.log(window.innerHeight);
   });
 }
 
-$(document).ready(function() {
-  var locale = getParameterByName('locale');
+$(document).ready(() => {
+  const locale = getParameterByName('locale');
   initI18N(locale, 'ns.editorHTML.json');
 });
 
-var sourceURL = '';
-var currentContent;
-var scrappedOn = '';
+let sourceURL = '';
+let currentContent;
+let scrappedOn = '';
 
 function getContent() {
   console.log('Getting text content from editor.');
-  $(".note-editable .tsCheckBox").each(() => {
-    $(this).attr("disabled", "disabled");
+  $('.note-editable .tsCheckBox').each(() => {
+    $(this).attr('disabled', 'disabled');
   });
 
-  let content = $(".note-editable").html();
+  let content = $('.note-editable').html();
 
-/* Clean content
-    $("#iframeViewer").contents().find(".note-editable .tsCheckBox").each(function() {
-      $(this).removeAttr("disabled");
-    });
+  /* Clean content
 
     // removing all scripts from the document
     var cleanedContent = content.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
@@ -190,12 +190,12 @@ function getContent() {
 
 function setContent(content, filePath) {
   // adjusting relative paths
-  //$('base').attr('href', currentFilePath);
+  // $('base').attr('href', currentFilePath);
   currentContent = content;
 
-  var bodyContent;
-  var cleanedContent;
-  var bodyRegex = /\<body[^>]*\>([^]*)\<\/body/m; // jshint ignore:line
+  let bodyContent;
+  let cleanedContent;
+  const bodyRegex = /\<body[^>]*\>([^]*)\<\/body/m;
 
   if (content.length > 3) {
     try {
@@ -206,14 +206,14 @@ function setContent(content, filePath) {
     }
 
     try {
-      var scrappedOnRegex = /data-scrappedon='([^']*)'/m; // jshint ignore:line
+      const scrappedOnRegex = /data-scrappedon='([^']*)'/m;
       scrappedOn = content.match(scrappedOnRegex)[1];
     } catch (e) {
       console.log('Error parsing the meta from the HTML document. ' + e);
     }
 
     try {
-      var sourceURLRegex = /data-sourceurl='([^']*)'/m; // jshint ignore:line
+      const sourceURLRegex = /data-sourceurl='([^']*)'/m;
       sourceURL = content.match(sourceURLRegex)[1];
     } catch (e) {
       console.log('Error parsing the meta from the HTML document. ' + e);
@@ -237,14 +237,14 @@ function setContent(content, filePath) {
   );
 
   // saving all images as png in base64 format
-  var match;
-  var urls = [];
-  var imgUrl = '';
-  var rex = /<img.*?src="([^">]*\/([^">]*?))".*?>/g;
+  let match;
+  const urls = [];
+  let imgUrl = '';
+  const rex = /<img.*?src="([^">]*\/([^">]*?))".*?>/g;
 
   while ((match = rex.exec(cleanedContent))) {
     imgUrl = match[1];
-    console.log('URLs: ' + imgUrl);
+    // console.log('URLs: ' + imgUrl);
     if (imgUrl.indexOf('data:image') === 0) {
       // Ignore data url
     } else {
@@ -252,13 +252,13 @@ function setContent(content, filePath) {
     }
   }
 
-  urls.forEach(function(dataURLObject) {
+  urls.forEach((dataURLObject) => {
     if (dataURLObject[1].length > 7) {
       cleanedContent = cleanedContent
         .split(dataURLObject[0])
         .join(dataURLObject[1]);
     }
-    //console.log(dataURLObject[0]+' - '+dataURLObject[1]);
+    // console.log(dataURLObject[0]+' - '+dataURLObject[1]);
   });
   // end saving all images
 
@@ -274,7 +274,7 @@ function setContent(content, filePath) {
   $htmlEditor = $('#htmlEditor');
   $htmlEditor.append(cleanedContent);
 
-  $htmlEditor.find('.tsCheckBox').each(function() {
+  $htmlEditor.find('.tsCheckBox').each(() => {
     $(this).removeAttr('disabled');
   });
 
