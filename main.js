@@ -138,8 +138,8 @@ let scrappedOn = '';
 
 function getContent() {
   console.log('Getting text content from editor.');
-  $('.note-editable .tsCheckBox').each(() => {
-    $(this).attr('disabled', 'disabled');
+  $('.note-editable .tsCheckBox').each((index, checkbox) => {
+    $(checkbox).attr('disabled', 'disabled');
   });
 
   let content = $('.note-editable').html();
@@ -274,8 +274,8 @@ function setContent(content, filePath) {
   $htmlEditor = $('#htmlEditor');
   $htmlEditor.append(cleanedContent);
 
-  $htmlEditor.find('.tsCheckBox').each(() => {
-    $(this).removeAttr('disabled');
+  $htmlEditor.find('.tsCheckBox').each((index, checkbox) => {
+    $(checkbox).removeAttr('disabled');
   });
 
   // Check if summernote is loaded
