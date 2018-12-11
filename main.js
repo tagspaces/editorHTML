@@ -8,6 +8,7 @@
 sendMessageToHost({ command: 'loadDefaultTextContent' });
 
 let $htmlEditor;
+let currentFilePath;
 
 function initEditor() {
   let toolbar = [
@@ -113,6 +114,11 @@ function initEditor() {
     callbacks: {
       onChange: () => {
         sendMessageToHost({ command: 'contentChangedInEditor', filepath: '' });
+      },
+      onKeyup: (e) => {
+        if (e.ctrlKey && e.keyCode === 83 && currentFilePath) {
+          sendMessageToHost({ command: 'saveDocument', filepath: currentFilePath });
+        }
       }
     }
   });
@@ -192,6 +198,7 @@ function setContent(content, filePath) {
   // adjusting relative paths
   // $('base').attr('href', currentFilePath);
   currentContent = content;
+  currentFilePath = filePath;
 
   let bodyContent;
   let cleanedContent;
