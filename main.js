@@ -148,7 +148,11 @@ function getContent() {
     $(checkbox).attr('disabled', 'disabled');
   });
 
-  let content = $('.note-editable').html();
+  const content = $('.note-editable').html();
+
+  $('.note-editable .tsCheckBox').each((index, checkbox) => {
+    $(checkbox).attr('disabled', false);
+  });
 
   /* Clean content
 
