@@ -2,9 +2,6 @@
  * Use of this source code is governed by the MIT license which can be found in the LICENSE.txt file. */
 
 /* globals $ isCordova sendMessageToHost initI18N getParameterByName */
-
-'use strict';
-
 sendMessageToHost({ command: 'loadDefaultTextContent' });
 
 let $htmlEditor;
@@ -141,6 +138,7 @@ $(document).ready(() => {
 let sourceURL = '';
 let currentContent;
 let scrappedOn = '';
+let screenshotDataURL = '';
 
 function getContent() {
   console.log('Getting text content from editor.');
@@ -154,48 +152,63 @@ function getContent() {
     $(checkbox).attr('disabled', false);
   });
 
-  /* Clean content
+  // Clean content
 
-    // removing all scripts from the document
-    var cleanedContent = content.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
+  // removing all scripts from the document
+  let cleanedContent = content.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "");
 
-    // saving all images as png in base64 format
-    var match;
-    var urls = [];
-    var imgUrl = "";
-    var rex = /<img.*?src="([^">]*\/([^">]*?))".*?>/g;
+  // saving all images as png in base64 format
+  let match;
+  const urls = [];
+  let imgUrl = '';
+  const rex = /<img.*?src="([^">]*\/([^">]*?))".*?>/g;
 
-    while (match = rex.exec(cleanedContent)) {
-      imgUrl = match[1];
-      console.log("URLs: " + imgUrl);
-      if (imgUrl.indexOf('data:image') === 0) {
-        // Ignore data url
-      } else {
-        urls.push([imgUrl, TSCORE.Utils.getBase64Image(imgUrl)]);
-      }
-
-    }
-
-    urls.forEach(function(dataURLObject) {
-      if (dataURLObject[1].length > 7) {
-        cleanedContent = cleanedContent.split(dataURLObject[0]).join(dataURLObject[1]);
-      }
-      //console.log(dataURLObject[0]+" - "+dataURLObject[1]);
-    });
-    // end saving all images
-
-    cleanedContent = "<body data-sourceurl='" + sourceURL + "' data-scrappedon='" + scrappedOn + "' >" + cleanedContent + "</body>";
-
-    var indexOfBody = currentContent.indexOf("<body");
-    var htmlContent = "";
-    if (indexOfBody >= 0 && currentContent.indexOf("</body>") > indexOfBody) {
-      htmlContent = currentContent.replace(/\<body[^>]*\>([^]*)\<\/body>/m, cleanedContent); // jshint ignore:line
+  while (match = rex.exec(cleanedContent)) {
+    imgUrl = match[1];
+    console.log("URLs: " + imgUrl);
+    if (imgUrl.indexOf('data:image') === 0) {
+      // Ignore data url
     } else {
-      htmlContent = cleanedContent;
+      urls.push([imgUrl, getBase64Image(imgUrl)]);
     }
-*/
+  }
 
-  return content;
+  urls.forEach((dataURLObject) => {
+    if (dataURLObject[1].length > 7) {
+      cleanedContent = cleanedContent.split(dataURLObject[0]).join(dataURLObject[1]);
+    }
+    return true;
+    // console.log(dataURLObject[0]+" - "+dataURLObject[1]);
+  });
+  // end saving all images
+
+  cleanedContent = '<body data-sourceurl="' + sourceURL +
+                  '" data-scrappedon="' + scrappedOn +
+                  '" data-screenshot="' + screenshotDataURL +
+                  '" >' + cleanedContent + '</body>';
+  // console.log(cleanedContent);
+
+  const indexOfBody = currentContent.indexOf('<body');
+  let htmlContent = '';
+  if (indexOfBody >= 0 && currentContent.indexOf('</body>') > indexOfBody) {
+    htmlContent = currentContent.replace(/\<body[^>]*\>([^]*)\<\/body>/m, cleanedContent); // jshint ignore:line
+  } else {
+    htmlContent = cleanedContent;
+  }
+
+  return htmlContent;
+}
+
+function getBase64Image(imgURL) {
+  const canvas = document.createElement('canvas');
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.src = imgURL;
+  canvas.width = img.width;
+  canvas.height = img.height;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+  return canvas.toDataURL('image/png');
 }
 
 function setContent(content, filePath) {
@@ -206,7 +219,8 @@ function setContent(content, filePath) {
 
   let bodyContent;
   let cleanedContent;
-  const bodyRegex = /\<body[^>]*\>([^]*)\<\/body/m;
+  // const bodyRegex = /\<body[^>]*\>([^]*)\<\/body/m;
+  const bodyRegex = /<body[^>]*>((.|[\n\r])*)<\/body>/im;
 
   if (content.length > 3) {
     try {
@@ -217,17 +231,24 @@ function setContent(content, filePath) {
     }
 
     try {
-      const scrappedOnRegex = /data-scrappedon='([^']*)'/m;
+      const scrappedOnRegex = /data-scrappedon="([^"]*)"/m;
       scrappedOn = content.match(scrappedOnRegex)[1];
     } catch (e) {
-      console.log('Error parsing the meta from the HTML document. ' + e);
+      console.log('Error parsing the scrapping date from the HTML document. ' + e);
     }
 
     try {
-      const sourceURLRegex = /data-sourceurl='([^']*)'/m;
+      const sourceURLRegex = /data-sourceurl="([^"]*)"/m;
       sourceURL = content.match(sourceURLRegex)[1];
     } catch (e) {
-      console.log('Error parsing the meta from the HTML document. ' + e);
+      console.log('Error parsing the sourceurl from the HTML document. ' + e);
+    }
+
+    try {
+      const screenhotDataURLRegex = /data-screenshot="([^"]*)"/m;
+      screenshotDataURL = content.match(screenhotDataURLRegex)[1];
+    } catch (e) {
+      console.log('Error parsing the screenshot from the HTML document. ' + e);
     }
 
     // var titleRegex = /\<title[^>]*\>([^]*)\<\/title/m;
@@ -273,14 +294,10 @@ function setContent(content, filePath) {
   });
   // end saving all images
 
-  cleanedContent =
-    "<body data-sourceurl='" +
-    sourceURL +
-    "' data-scrappedon='" +
-    scrappedOn +
-    "' >" +
-    cleanedContent +
-    '</body>';
+  cleanedContent = '<body data-sourceurl="' + sourceURL +
+                  '" data-scrappedon="' + scrappedOn +
+                  '" data-screenshot="' + screenshotDataURL +
+                  '" >' + cleanedContent + '</body>';
 
   $htmlEditor = $('#htmlEditor');
   $htmlEditor.append(cleanedContent);
