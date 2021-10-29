@@ -1,3 +1,5 @@
+This repository is archived. Please use https://github.com/tagspaces/tagspaces-extensions instead
+
 # HTML Editor for TagSpaces
 
 A TagSpaces extension allowing editing of HTML documents.
